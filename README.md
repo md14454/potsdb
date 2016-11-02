@@ -32,11 +32,12 @@ import potsdb
 # minimum is hostname. port is defaulted to 4242:
 metrics = potsdb.Client('hostname.local')
 # all options:
-metrics = potsdb.Client('hostname.local', port=4242, qsize=1000, host_tag=True, mps=100, check_host=True)
+metrics = potsdb.Client('hostname.local', port=4242, qsize=1000, host_tag=True, mps=100, ms_precision=True, check_host=True)
 
 # qsize: Max Size of Queue. Note: if Queue reaches qsize, old metrics will be dropped. 0 = unlimited. Default is 100k
 # host_tag: True for automatic, string value for override, None for nothing
 # mps: Metrics Per Second rate limiting. Default is 0 (unlimited)
+# ms_precision: Enable millisecond precision when writing metrics. Default is False
 # check_host: change to false to skip startup connectivity checking
 
 # Bare minimum is metric name, metric value

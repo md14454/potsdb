@@ -78,7 +78,7 @@ def _push(host, port, q, done, mps, stop, test_mode):
 
 class Client():
     def __init__(self, host, port=4242, qsize=100000, host_tag=True,
-                 mps=MPS_LIMIT, check_host=True, test_mode=False):
+                 mps=MPS_LIMIT, ms_precision=False, check_host=True, test_mode=False):
         """Main tsdb client. Connect to host/port. Buffer up to qsize metrics"""
 
         self.q = queue.Queue(maxsize=qsize)
@@ -87,6 +87,7 @@ class Client():
         self.host = host
         self.port = int(port)
         self.queued = 0
+        self.ms_precision = ms_precision
 
         # Make initial check that the host is up, because once in the
         # background thread it will be silently ignored/retried
@@ -126,7 +127,10 @@ class Client():
             tags['host'] = self.host_tag
 
         # get timestamp from system time, unless it's supplied as a tag
-        timestamp = int(tags.pop('timestamp', time.time()))
+        if self.ms_precision:
+            timestamp = int(tags.pop('timestamp', time.time() * 1000))
+        else:
+            timestamp = int(tags.pop('timestamp', time.time()))
 
         assert not self.done.is_set(), "tsdb object has been closed"
         assert tags != {}, "Need at least one tag"
